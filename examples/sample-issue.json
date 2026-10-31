@@ -1,0 +1,1 @@
+{"title":"Login returns 500","body":"POST /api/login sometimes returns HTTP 500 for a valid token. Expected a successful response. Actual response is HTTP 500."}
