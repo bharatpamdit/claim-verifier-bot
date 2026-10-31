@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Claim Verifier Bot — IssueLens AI
 **Don't Trust Claims. Verify Them With Code.**
 
@@ -71,7 +71,4 @@ A GitHub token is optional for public repos but required once the anonymous IP r
 3. Python + JS analyzer/evidence
 4. React UI and integration
 
-Before hackathon submission, complete `HACKATHON.md`, verify organizer-required first-commit rules, add actual tested examples, and ensure CI passes.
-=======
-# claim-verifier-bot
->>>>>>> origin/main
+
