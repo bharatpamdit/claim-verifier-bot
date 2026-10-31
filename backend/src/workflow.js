@@ -183,6 +183,16 @@ ${body}`);
   }
   const files=await sourceFiles(owner,repo,ref,token);
   const evidence=await analyzeCode(claims,files);
+  let changedFiles=[];
+  let changedFilesWarning="";
+  if(type==="pr") {
+    try {
+      const changed=await gh(`/repos/${owner}/${repo}/pulls/${n}/files?per_page=100`,token);
+      changedFiles=changed.map(f=>({path:f.filename,status:f.status,additions:f.additions,deletions:f.deletions,changes:f.changes,patch:String(f.patch||"").slice(0,4000)}));
+    } catch(error) {
+      changedFilesWarning=`Changed file list unavailable: ${error.message}`;
+    }
+  }
   let assessment={verdict:"Uncertain",summary:"Local AI assessment unavailable; inspect candidate evidence manually.",claims:claims.map(c=>({id:c.id,verdict:"Uncertain",reason:"No validated assessment returned.",missingEvidence:["Reproduction or test evidence"]})),limitations:["No repository code or tests were executed."]};
   let assessmentStatus="AI assessment unavailable";
   try {
@@ -195,7 +205,7 @@ No tests were run.`));
   } catch (error) {
     assessment.limitations=[...(assessment.limitations||[]),`AI assessment unavailable: ${error.message}`];
   }
-  const result={id:randomUUID(),owner,repo,type,number:n,title:item.title,url:item.html_url,analyzedRef:ref,claims,evidence:evidence.evidence||[],filesScanned:evidence.filesScanned,assessment,aiStatus:assessmentStatus,createdAt:new Date().toISOString(),note:["Static evidence search only. This MVP did not execute repository code or tests.",extractionWarning].filter(Boolean).join(" ")};
+  const result={id:randomUUID(),owner,repo,type,number:n,title:item.title,url:item.html_url,analyzedRef:ref,claims,evidence:evidence.evidence||[],filesScanned:evidence.filesScanned,changedFiles,changedFilesWarning,assessment,aiStatus:assessmentStatus,createdAt:new Date().toISOString(),note:["Static evidence search only. This MVP did not execute repository code or tests.",extractionWarning].filter(Boolean).join(" ")};
   store.set(result.id,result);
   return result;
 }
