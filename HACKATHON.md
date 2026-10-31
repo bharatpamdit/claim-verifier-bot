@@ -3,7 +3,7 @@ Team Name: Phantom
 Team Members:
     1. Rohan : rohan.s25383@nst.rishihood.edu.in
     2. Raj : toonu.s25479@nst.rishihood.edu.in
-    3. Pankaj :pankak.k25317@nst.rishihood.edu.in
+    3. Pankaj :pankaj.k25317@nst.rishihood.edu.in
     4. Bharat : bharat.s25114@nst.rishihood.edu.in
 
 PROBLEM 02: Evidence-Based Open Source Issue and Pull Request Triage
