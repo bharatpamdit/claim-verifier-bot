@@ -187,3 +187,53 @@ html[data-theme="light"] .hero-particles{opacity:1!important;filter:none!importa
 html[data-theme="light"] .hero .demo-launch{background:transparent!important;border-color:#e8e8ea!important;color:#526bff!important;box-shadow:none!important}
 html[data-theme="light"] .hero .demo-launch:hover{background:#f7f7f8!important;border-color:#526bff!important}
 html[data-theme="light"] .hero .demo-launch small{color:#858585!important}
+
+/* Subtle 3D claim-to-evidence visual in the hero */
+.hero{max-width:900px!important}
+.hero-intro{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(280px,.82fr);gap:18px;align-items:center;min-height:320px;text-align:left}
+.hero-copy{position:relative;z-index:1;text-align:left}
+.hero-copy h1{font-size:clamp(42px,5vw,56px)!important;letter-spacing:-2.2px!important}
+.hero-copy p{margin-left:0;margin-right:0;max-width:540px}
+.hero form{max-width:620px;margin:8px auto 0}
+.evidence-visual{position:relative;width:min(320px,100%);height:290px;margin:0 auto;perspective:1000px;transform-style:preserve-3d;isolation:isolate;pointer-events:none}
+.evidence-orbit{position:absolute;inset:22px 26px;border:1px solid rgba(88,166,255,.18);border-radius:50%;transform-style:preserve-3d;backface-visibility:hidden}
+.evidence-orbit::after{content:"";position:absolute;top:14%;left:17%;width:7px;height:7px;border-radius:50%;background:#79b8ff;box-shadow:0 0 18px rgba(88,166,255,.7)}
+.evidence-orbit-one{animation:evidence-orbit-a 22s linear infinite}
+.evidence-orbit-two{inset:28px 22px;border-color:rgba(139,148,158,.17);animation:evidence-orbit-b 28s linear infinite reverse}
+.evidence-orbit-two::after{top:auto;left:auto;right:13%;bottom:13%;width:5px;height:5px;background:#c9d1d9;box-shadow:0 0 14px rgba(201,209,217,.5)}
+.evidence-stack{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(calc(10deg + var(--evidence-tilt-y,0deg))) rotateY(calc(-17deg + var(--evidence-tilt-x,0deg)));transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.evidence-float{position:absolute;inset:0;transform-style:preserve-3d;animation:evidence-float 7s ease-in-out infinite}
+.evidence-code-card,.evidence-claim-card{position:absolute;overflow:hidden;border:1px solid #30363d;border-radius:12px;background:rgba(22,27,34,.96);box-shadow:0 20px 48px rgba(0,0,0,.26);backface-visibility:hidden}
+.evidence-code-card{top:28px;left:68px;width:226px;height:148px;padding:12px 14px;transform:translateZ(-30px) rotateZ(5deg)}
+.evidence-window{display:flex;align-items:center;gap:5px;height:21px;padding-bottom:8px;border-bottom:1px solid #30363d}
+.evidence-window>span{width:6px;height:6px;border-radius:50%;background:#484f58}
+.evidence-window>span:first-child{background:#58a6ff}
+.evidence-window code{margin-left:6px;color:#8b949e;font:9px ui-monospace,SFMono-Regular,Menlo,monospace}
+.evidence-code-card pre{margin:11px 0 7px;color:#c9d1d9;font:9px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre}
+.evidence-code-card pre i{color:#58a6ff;font-style:normal}
+.evidence-code-card>small{display:flex;align-items:center;gap:5px;color:#79b8ff!important;font:700 8px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px!important}
+.evidence-code-card>small svg{width:11px;height:11px}
+.evidence-claim-card{top:126px;left:14px;width:222px;height:124px;padding:14px 16px;transform:translateZ(34px) rotateZ(-5deg);background:rgba(22,27,34,.98)}
+.evidence-claim-card>small{color:#8b949e!important;font:700 8px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1.2px!important}
+.evidence-claim-card strong{display:block;margin-top:9px;color:#e6edf3;font-size:18px;line-height:1.12;letter-spacing:-.4px}
+.evidence-status{display:flex;align-items:center;gap:6px;margin-top:9px;color:#79b8ff;font:700 7px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.65px}
+.evidence-status i{width:5px;height:5px;border-radius:50%;background:#58a6ff;box-shadow:0 0 9px rgba(88,166,255,.65)}
+.evidence-particle{position:absolute;z-index:2;width:5px;height:5px;border-radius:50%;background:#79b8ff;box-shadow:0 0 15px rgba(88,166,255,.65);animation:evidence-twinkle 3.6s ease-in-out infinite}
+.evidence-particle-one{top:54px;right:22px}.evidence-particle-two{bottom:34px;left:48px;width:4px;height:4px;animation-delay:1.4s}
+@keyframes evidence-orbit-a{from{transform:rotateX(67deg) rotateZ(-24deg) rotateY(0)}to{transform:rotateX(67deg) rotateZ(-24deg) rotateY(360deg)}}
+@keyframes evidence-orbit-b{from{transform:rotateX(69deg) rotateZ(30deg) rotateY(0)}to{transform:rotateX(69deg) rotateZ(30deg) rotateY(360deg)}}
+@keyframes evidence-float{0%,100%{transform:translateY(-3px)}50%{transform:translateY(5px)}}
+@keyframes evidence-twinkle{0%,100%{opacity:.45;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+html[data-theme="light"] .evidence-orbit{border-color:rgba(82,107,255,.19)}
+html[data-theme="light"] .evidence-orbit-two{border-color:rgba(23,23,23,.13)}
+html[data-theme="light"] .evidence-code-card,html[data-theme="light"] .evidence-claim-card{background:rgba(255,255,255,.96);border-color:#d8dbe4;box-shadow:0 20px 48px rgba(23,23,23,.13)}
+html[data-theme="light"] .evidence-window{border-color:#e8e8ea}
+html[data-theme="light"] .evidence-window>span{background:#b7bdc7}
+html[data-theme="light"] .evidence-code-card pre{color:#343434}
+html[data-theme="light"] .evidence-claim-card strong{color:#171717}
+html[data-theme="light"] .evidence-code-card>small,html[data-theme="light"] .evidence-status{color:#526bff!important}
+html[data-theme="light"] .evidence-code-card pre i{color:#526bff}
+html[data-theme="light"] .evidence-particle{background:#526bff;box-shadow:0 0 14px rgba(82,107,255,.4)}
+@media(max-width:760px){.hero-intro{grid-template-columns:1fr;gap:0;min-height:0;text-align:center}.hero-copy{text-align:center}.hero-copy p{margin-left:auto;margin-right:auto}.evidence-visual{width:300px;height:245px;margin:0 auto 4px}.evidence-code-card{top:15px;left:64px}.evidence-claim-card{top:107px;left:20px}.workflow-cards{margin-top:20px}}
+@media(max-width:420px){.evidence-visual{transform:scale(.9);transform-origin:top center;height:224px;margin-bottom:-5px}.hero-copy h1{font-size:clamp(37px,10vw,44px)!important;letter-spacing:-1.8px!important}}
+@media(prefers-reduced-motion:reduce){.evidence-orbit,.evidence-float,.evidence-particle{animation:none!important}.evidence-stack{transition:none!important;transform:rotateX(10deg) rotateY(-17deg)}}
