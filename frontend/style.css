@@ -251,3 +251,48 @@ html[data-theme="light"] .evidence-particle{background:#526bff;box-shadow:0 0 14
 html[data-theme="light"] .evidence-code-card,html[data-theme="light"] .evidence-claim-card{background:linear-gradient(145deg,#fff,#f8f9fc)}
 @media(max-width:760px){.hero-intro{padding-inline:4px}.evidence-visual{max-width:100%;overflow:visible}.hero form{width:100%}}
 @media(max-width:420px){.hero-intro{padding-inline:0}.evidence-visual{transform:scale(.86);height:214px;margin-bottom:-12px}.hero form{padding:6px 7px 6px 10px}}
+
+/* Soft layered elevation for the main interactive surfaces. */
+html[data-theme="dark"] .hero form,
+html[data-theme="dark"] .repo,
+html[data-theme="dark"] .repo-report,
+html[data-theme="dark"] .report-card,
+html[data-theme="dark"] .list,
+html[data-theme="dark"] .claim{
+  box-shadow:0 1px 2px rgba(0,0,0,.26),0 12px 32px rgba(0,0,0,.2),0 0 0 1px rgba(255,255,255,.018)!important;
+}
+html[data-theme="dark"] .report-stats>div,
+html[data-theme="dark"] .workflow-cards article{
+  box-shadow:0 2px 8px rgba(0,0,0,.16),0 10px 24px rgba(0,0,0,.12)!important;
+}
+html[data-theme="dark"] .hero button,
+html[data-theme="dark"] .list article button{
+  box-shadow:0 3px 10px rgba(56,139,253,.2),0 1px 2px rgba(0,0,0,.22)!important;
+}
+html[data-theme="dark"] .hero button:hover,
+html[data-theme="dark"] .list article button:hover{
+  box-shadow:0 6px 18px rgba(56,139,253,.3),0 2px 4px rgba(0,0,0,.24)!important;
+}
+html[data-theme="light"] .hero form,
+html[data-theme="light"] .repo,
+html[data-theme="light"] .repo-report,
+html[data-theme="light"] .report-card,
+html[data-theme="light"] .list,
+html[data-theme="light"] .claim{
+  box-shadow:0 1px 2px rgba(20,24,35,.04),0 12px 32px rgba(20,24,35,.075),0 0 0 1px rgba(20,24,35,.015)!important;
+}
+html[data-theme="light"] .report-stats>div{
+  box-shadow:0 2px 6px rgba(20,24,35,.035),0 8px 20px rgba(20,24,35,.045)!important;
+}
+html[data-theme="light"] .hero button,
+html[data-theme="light"] .list article button{
+  box-shadow:0 3px 9px rgba(82,107,255,.2),0 1px 2px rgba(20,24,35,.08)!important;
+}
+html[data-theme="light"] .hero button:hover,
+html[data-theme="light"] .list article button:hover{
+  box-shadow:0 6px 16px rgba(82,107,255,.27),0 2px 4px rgba(20,24,35,.1)!important;
+}
+.evidence-code-card{box-shadow:0 2px 4px rgba(0,0,0,.2),0 14px 28px rgba(0,0,0,.25),0 34px 64px rgba(0,0,0,.2)!important}
+.evidence-claim-card{box-shadow:0 3px 6px rgba(0,0,0,.22),0 18px 36px rgba(0,0,0,.3),0 38px 68px rgba(0,0,0,.2)!important}
+html[data-theme="light"] .evidence-code-card{box-shadow:0 2px 5px rgba(20,24,35,.07),0 14px 30px rgba(20,24,35,.12),0 34px 58px rgba(82,107,255,.08)!important}
+html[data-theme="light"] .evidence-claim-card{box-shadow:0 3px 7px rgba(20,24,35,.09),0 18px 38px rgba(20,24,35,.15),0 40px 68px rgba(82,107,255,.1)!important}
