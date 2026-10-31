@@ -237,3 +237,17 @@ html[data-theme="light"] .evidence-particle{background:#526bff;box-shadow:0 0 14
 @media(max-width:760px){.hero-intro{grid-template-columns:1fr;gap:0;min-height:0;text-align:center}.hero-copy{text-align:center}.hero-copy p{margin-left:auto;margin-right:auto}.evidence-visual{width:300px;height:245px;margin:0 auto 4px}.evidence-code-card{top:15px;left:64px}.evidence-claim-card{top:107px;left:20px}.workflow-cards{margin-top:20px}}
 @media(max-width:420px){.evidence-visual{transform:scale(.9);transform-origin:top center;height:224px;margin-bottom:-5px}.hero-copy h1{font-size:clamp(37px,10vw,44px)!important;letter-spacing:-1.8px!important}}
 @media(prefers-reduced-motion:reduce){.evidence-orbit,.evidence-float,.evidence-particle{animation:none!important}.evidence-stack{transition:none!important;transform:rotateX(10deg) rotateY(-17deg)}}
+
+/* Responsive hero polish: keep the copy and evidence preview balanced on tablets. */
+@media(min-width:761px) and (max-width:980px){
+  .hero{max-width:860px!important}
+  .hero-intro{grid-template-columns:minmax(0,1fr) 290px;gap:8px;min-height:300px}
+  .hero-copy h1{font-size:clamp(40px,5vw,49px)!important;letter-spacing:-2px!important}
+  .evidence-visual{transform:scale(.94);transform-origin:center}
+}
+.evidence-code-card,.evidence-claim-card{transition:border-color .25s ease,box-shadow .25s ease}
+.evidence-code-card{background:linear-gradient(145deg,rgba(29,35,44,.98),rgba(17,22,29,.98))}
+.evidence-claim-card{background:linear-gradient(145deg,rgba(29,35,44,.99),rgba(17,22,29,.99))}
+html[data-theme="light"] .evidence-code-card,html[data-theme="light"] .evidence-claim-card{background:linear-gradient(145deg,#fff,#f8f9fc)}
+@media(max-width:760px){.hero-intro{padding-inline:4px}.evidence-visual{max-width:100%;overflow:visible}.hero form{width:100%}}
+@media(max-width:420px){.hero-intro{padding-inline:0}.evidence-visual{transform:scale(.86);height:214px;margin-bottom:-12px}.hero form{padding:6px 7px 6px 10px}}
