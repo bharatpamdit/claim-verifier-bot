@@ -1,5 +1,5 @@
 
-# Claim Verifier Bot — IssueLens AI
+# Claim Verifier Bot
 **Don't Trust Claims. Verify Them With Code.**
 
 A runnable hackathon MVP: connect a public GitHub repository, fetch open issues, extract technical claims using a local Ollama model, search JS/Python files for candidate evidence, and show a cautious triage report.
