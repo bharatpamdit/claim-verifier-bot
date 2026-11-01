@@ -62,7 +62,7 @@ body {
 
 header {
   height: 68px;
-  border-bottom: 1px solid #26344b;
+  border-bottom: 1px solid #2d3c56;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -75,14 +75,14 @@ header {
 .brand {
   font: 700 18px Manrope;
   letter-spacing: -.5px;
-  color: #f2f6ff;
+  color: #dcdee3;
   display: flex;
   align-items: center;
   gap: 9px
 }
 
 .brand svg {
-  color: #91b5ff
+  color: #92b6fd
 }
 
 .brand b {
@@ -156,7 +156,7 @@ main {
 =======
   font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 2px;
-  color: #83aaff
+  color: #7fa6fa
 }
 
 .hero h1 {
@@ -303,7 +303,7 @@ main {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: #111d30;
+  background: #121e32;
   border: 1px solid #2a3c57;
   border-radius: 13px;
   margin-bottom: 36px
