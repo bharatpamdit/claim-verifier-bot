@@ -460,13 +460,13 @@ footer {
 }
 
 .token-entry input:focus {
-  border-color: #83aaff
+  border-color: #83a4ea
 }
 
 .token-entry small {
   display: block;
   margin: 7px 3px;
-  color: #7184a1;
+  color: #7a8eac;
   font: 9px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace
 }
 
@@ -492,7 +492,7 @@ footer {
 .report-title small {
   font: 9px ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 1.5px;
-  color: #83aaff
+  color: #8db1ff
 }
 
 .report-title h2 {
@@ -524,7 +524,7 @@ footer {
 .report-stats>div {
   padding: 12px;
   background: #111f33;
-  border: 1px solid #253b59;
+  border: 1px solid #283f5f;
   border-radius: 9px
 }
 
