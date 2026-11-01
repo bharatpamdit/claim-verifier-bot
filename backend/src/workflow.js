@@ -60,9 +60,6 @@ export async function connectRepo(url, token) {
   if(d.private) throw new Error("Only public repositories are supported in this MVP.");
   return {owner,repo,fullName:d.full_name,description:d.description,defaultBranch:d.default_branch,language:d.language,stars:d.stargazers_count,openIssues:d.open_issues_count,url:d.html_url};
 }
-const manifests = new Set(["package.json","package-lock.json","pnpm-lock.yaml","yarn.lock","requirements.txt","pyproject.toml","Pipfile","Cargo.toml","Cargo.lock","go.mod","go.sum","pom.xml","build.gradle","build.gradle.kts","composer.json","Gemfile","Gemfile.lock","Dockerfile","docker-compose.yml","compose.yaml"]);
-const dependencyManifests = new Set(["package.json","requirements.txt","pyproject.toml","Pipfile","Cargo.toml","go.mod","pom.xml","build.gradle","build.gradle.kts","composer.json","Gemfile"]);
-const languageByExt = {js:"JavaScript",jsx:"JavaScript",mjs:"JavaScript",cjs:"JavaScript",ts:"TypeScript",tsx:"TypeScript",py:"Python",go:"Go",rs:"Rust",java:"Java",kt:"Kotlin",kts:"Kotlin",swift:"Swift",rb:"Ruby",php:"PHP",cs:"C#",cpp:"C++",cc:"C++",c:"C",h:"C/C++",hpp:"C++",html:"HTML",css:"CSS",scss:"SCSS",vue:"Vue",svelte:"Svelte",sh:"Shell",bash:"Shell",sql:"SQL",md:"Markdown",json:"JSON",yaml:"YAML",yml:"YAML",toml:"TOML",xml:"XML"};
 function rawUrl(owner,repo,ref,path) { return `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(ref)}/${path.split("/").map(encodeURIComponent).join("/")}`; }
 async function rawText(owner,repo,ref,path) {
   try { const r=await fetch(rawUrl(owner,repo,ref,path)); return r.ok ? await r.text() : null; } catch { return null; }
@@ -77,17 +74,6 @@ function categorize(path) {
   if (/(^|\/)(\.github|\.vscode|config|scripts|infra|deploy|terraform)(\/|$)/.test(p) || /^(dockerfile|makefile|\.gitignore|\.editorconfig|\.env.example)$/.test(p)) return "Configuration and tooling";
   return "Other";
 }
-function manifestSummary(path,text) {
-  if (!text) return {path,ecosystem:"Manifest",details:"File could not be fetched."};
-  const basename=path.split("/").pop();
-  if (path.endsWith("package.json")) {
-    try { const p=JSON.parse(text); return {path,ecosystem:"Node.js",name:p.name||null,version:p.version||null,main:p.main||p.module||null,bin:p.bin||null,scripts:p.scripts||{},dependencies:Object.keys(p.dependencies||{}),devDependencies:Object.keys(p.devDependencies||{})}; }
-    catch { return {path,ecosystem:"Node.js",details:"Could not parse package.json."}; }
-  }
-  const ecosystem=basename==="requirements.txt"||basename==="pyproject.toml"||basename==="Pipfile"?"Python":basename==="Cargo.toml"?"Rust":basename==="go.mod"?"Go":basename==="pom.xml"||basename.startsWith("build.gradle")?"JVM":basename==="composer.json"?"PHP":basename==="Gemfile"?"Ruby":basename.includes("Docker")||basename.startsWith("compose")?"Containers":"Dependency / build manifest";
-  const entries=text.split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#")&&!x.startsWith("//")).slice(0,80);
-  return {path,ecosystem,entries};
-}
 export async function repositoryReport(owner,repo,token) {
   validateRepo(owner, repo);
   const meta=await gh(`/repos/${owner}/${repo}`,token);
@@ -98,32 +84,18 @@ export async function repositoryReport(owner,repo,token) {
   const files=(treeData.tree||[]).filter(x=>x.type==="blob").map(x=>({path:x.path,size:x.size||0,sha:x.sha,category:categorize(x.path)}));
   const directories=new Set();
   for(const f of files){const parts=f.path.split("/");for(let i=1;i<parts.length;i++)directories.add(parts.slice(0,i).join("/"));}
-  const extCounts={};
-  for(const f of files){const ext=f.path.split("/").pop().split(".").pop().toLowerCase();const label=languageByExt[ext];if(label)extCounts[label]=(extCounts[label]||0)+1;}
-  const dependencyPaths=files.map(x=>x.path).filter(p=>dependencyManifests.has(p.split("/").pop()));
-  const buildPaths=files.map(x=>x.path).filter(p=>manifests.has(p.split("/").pop())&&!dependencyManifests.has(p.split("/").pop()));
-  const manifestPaths=[...dependencyPaths,...buildPaths];
-  const otherImportant=files.map(x=>x.path).filter(p=>/^(readme(?:\.[^/]*)?|license(?:\.[^/]*)?|copying|contributing(?:\.[^/]*)?|code_of_conduct(?:\.[^/]*)?|security(?:\.[^/]*)?|changelog(?:\.[^/]*)?|\.github\/workflows\/[^/]+|Dockerfile|docker-compose\.yml|compose\.yaml|Makefile)$/i.test(p)||(["package-lock.json","pnpm-lock.yaml","yarn.lock","Cargo.lock","go.sum","Gemfile.lock"].includes(p.split("/").pop()))).slice(0,40);
-  const importantFiles=[...new Set([...manifestPaths.slice(0,100),...otherImportant])];
   const readmePath=files.map(x=>x.path).find(p=>/^readme(?:\.[^/]*)?$/i.test(p));
-  const picked=[...new Set([...(readmePath?[readmePath]:[]),...manifestPaths.slice(0,100),...otherImportant])];
-  const fetched=[];
-  for(let i=0;i<picked.length;i+=8){fetched.push(...await Promise.all(picked.slice(i,i+8).map(async path=>({path,text:await rawText(owner,repo,meta.default_branch,path)}))));}
-  const textByPath=new Map(fetched.map(x=>[x.path,x.text]));
-  const dependencyFiles=fetched.filter(x=>dependencyManifests.has(x.path.split("/").pop())).map(x=>manifestSummary(x.path,x.text));
+  const readme=readmePath?await rawText(owner,repo,meta.default_branch,readmePath):null;
   const categoryCounts={};for(const f of files)categoryCounts[f.category]=(categoryCounts[f.category]||0)+1;
-  const entryPoints=files.map(x=>x.path).filter(p=>(/(^|\/)(main|index|app|server|cli)\.(js|jsx|ts|tsx|py|go|rs|java)$/.test(p)||/^(src\/)?main\.(c|cc|cpp)$/.test(p))&&!/(^|\/)(tests?|__tests__|examples?)(\/|$)|^website\/public\//i.test(p)).slice(0,50);
   const securityFiles=files.map(x=>x.path).filter(p=>/^\.github\/dependabot\.yml$|^\.github\/workflows\/.*(codeql|security|scan)/i.test(p)||/^security\.md$/i.test(p));
-  const keyFiles=importantFiles.map(path=>({path,available:textByPath.get(path)!==null&&textByPath.has(path)}));
-  const readme=readmePath?textByPath.get(readmePath):null;
   return {
     generatedAt:new Date().toISOString(),
     repository:{fullName:meta.full_name,url:meta.html_url,description:meta.description,visibility:meta.visibility,defaultBranch:meta.default_branch,createdAt:meta.created_at,updatedAt:meta.updated_at,pushedAt:meta.pushed_at,stars:meta.stargazers_count,forks:meta.forks_count,watchers:meta.subscribers_count,openIssues:meta.open_issues_count,license:meta.license?.spdx_id||null,archived:meta.archived,topics:meta.topics||[],homepage:meta.homepage||null},
     inventory:{fileCount:files.length,directoryCount:directories.size,treeTruncated:Boolean(treeData.truncated),files,categoryCounts},
-    languages:{githubBytes:languages,detectedFileCounts:extCounts},
-    architecture:{entryPoints,dependencyFiles,manifestFileCount:manifestPaths.length,manifestSampleTruncated:manifestPaths.length>100,keyFiles,securitySignals:{hasSecurityPolicy:files.some(x=>/^security\.md$/i.test(x.path)),hasDependabot:securityFiles.some(x=>/dependabot/i.test(x)),securityRelatedFiles:securityFiles},hasTests:(categoryCounts.Tests||0)>0,hasCI:(categoryCounts["CI workflows"]||0)>0,hasLicense:Boolean(meta.license),hasReadme:Boolean(readmePath)},
+    languages:{githubBytes:languages},
+    architecture:{securitySignals:{hasSecurityPolicy:files.some(x=>/^security\.md$/i.test(x.path)),hasDependabot:securityFiles.some(x=>/dependabot/i.test(x)),securityRelatedFiles:securityFiles},hasTests:(categoryCounts.Tests||0)>0,hasCI:(categoryCounts["CI workflows"]||0)>0,hasLicense:Boolean(meta.license),hasReadme:Boolean(readmePath)},
     readme:readme?{path:readmePath,excerpt:readme.slice(0,12000),truncated:readme.length>12000}:null,
-    caveats:["This report inventories the repository's default branch at the generated time.","File and language inventories are static metadata; source code is not executed and tests are not run.",...(treeData.truncated?["GitHub marked its recursive tree response as truncated, so the file inventory may be incomplete."]:[]),...(manifestPaths.length>100?["Only the first 100 dependency manifests are parsed; the full path inventory remains available below."]:[])]
+    caveats:["Repository inventory and health checks use GitHub metadata; code and tests are not executed.",...(treeData.truncated?["GitHub marked its file tree as truncated; the inventory may be incomplete."]:[])]
   };
 }
 export async function issues(owner,repo,token) {
