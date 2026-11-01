@@ -60,9 +60,12 @@ export async function connectRepo(url, token) {
   if(d.private) throw new Error("Only public repositories are supported in this MVP.");
   return {owner,repo,fullName:d.full_name,description:d.description,defaultBranch:d.default_branch,language:d.language,stars:d.stargazers_count,openIssues:d.open_issues_count,url:d.html_url};
 }
+<<<<<<< HEAD
 const manifests = new Set(["package.json","package-lock.json","pnpm-lock.yaml","yarn.lock","requirements.txt","pyproject.toml","Pipfile","Cargo.toml","Cargo.lock","go.mod","go.sum","pom.xml","build.gradle","build.gradle.kts","composer.json","Gemfile","Gemfile.lock","Dockerfile","docker-compose.yml","compose.yaml"]);
 const dependencyManifests = new Set(["package.json","requirements.txt","pyproject.toml","Pipfile","Cargo.toml","go.mod","pom.xml","build.gradle","build.gradle.kts","composer.json","Gemfile"]);
 const languageByExt = {js:"JavaScript",jsx:"JavaScript",mjs:"JavaScript",cjs:"JavaScript",ts:"TypeScript",tsx:"TypeScript",py:"Python",go:"Go",rs:"Rust",java:"Java",kt:"Kotlin",kts:"Kotlin",swift:"Swift",rb:"Ruby",php:"PHP",cs:"C#",cpp:"C++",cc:"C++",c:"C",h:"C/C++",hpp:"C++",html:"HTML",css:"CSS",scss:"SCSS",vue:"Vue",svelte:"Svelte",sh:"Shell",bash:"Shell",sql:"SQL",md:"Markdown",json:"JSON",yaml:"YAML",yml:"YAML",toml:"TOML",xml:"XML"};
+=======
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
 function rawUrl(owner,repo,ref,path) { return `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(ref)}/${path.split("/").map(encodeURIComponent).join("/")}`; }
 async function rawText(owner,repo,ref,path) {
   try { const r=await fetch(rawUrl(owner,repo,ref,path)); return r.ok ? await r.text() : null; } catch { return null; }
@@ -77,6 +80,7 @@ function categorize(path) {
   if (/(^|\/)(\.github|\.vscode|config|scripts|infra|deploy|terraform)(\/|$)/.test(p) || /^(dockerfile|makefile|\.gitignore|\.editorconfig|\.env.example)$/.test(p)) return "Configuration and tooling";
   return "Other";
 }
+<<<<<<< HEAD
 function manifestSummary(path,text) {
   if (!text) return {path,ecosystem:"Manifest",details:"File could not be fetched."};
   const basename=path.split("/").pop();
@@ -88,6 +92,8 @@ function manifestSummary(path,text) {
   const entries=text.split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#")&&!x.startsWith("//")).slice(0,80);
   return {path,ecosystem,entries};
 }
+=======
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
 export async function repositoryReport(owner,repo,token) {
   validateRepo(owner, repo);
   const meta=await gh(`/repos/${owner}/${repo}`,token);
@@ -98,6 +104,7 @@ export async function repositoryReport(owner,repo,token) {
   const files=(treeData.tree||[]).filter(x=>x.type==="blob").map(x=>({path:x.path,size:x.size||0,sha:x.sha,category:categorize(x.path)}));
   const directories=new Set();
   for(const f of files){const parts=f.path.split("/");for(let i=1;i<parts.length;i++)directories.add(parts.slice(0,i).join("/"));}
+<<<<<<< HEAD
   const extCounts={};
   for(const f of files){const ext=f.path.split("/").pop().split(".").pop().toLowerCase();const label=languageByExt[ext];if(label)extCounts[label]=(extCounts[label]||0)+1;}
   const dependencyPaths=files.map(x=>x.path).filter(p=>dependencyManifests.has(p.split("/").pop()));
@@ -116,14 +123,27 @@ export async function repositoryReport(owner,repo,token) {
   const securityFiles=files.map(x=>x.path).filter(p=>/^\.github\/dependabot\.yml$|^\.github\/workflows\/.*(codeql|security|scan)/i.test(p)||/^security\.md$/i.test(p));
   const keyFiles=importantFiles.map(path=>({path,available:textByPath.get(path)!==null&&textByPath.has(path)}));
   const readme=readmePath?textByPath.get(readmePath):null;
+=======
+  const readmePath=files.map(x=>x.path).find(p=>/^readme(?:\.[^/]*)?$/i.test(p));
+  const readme=readmePath?await rawText(owner,repo,meta.default_branch,readmePath):null;
+  const categoryCounts={};for(const f of files)categoryCounts[f.category]=(categoryCounts[f.category]||0)+1;
+  const securityFiles=files.map(x=>x.path).filter(p=>/^\.github\/dependabot\.yml$|^\.github\/workflows\/.*(codeql|security|scan)/i.test(p)||/^security\.md$/i.test(p));
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
   return {
     generatedAt:new Date().toISOString(),
     repository:{fullName:meta.full_name,url:meta.html_url,description:meta.description,visibility:meta.visibility,defaultBranch:meta.default_branch,createdAt:meta.created_at,updatedAt:meta.updated_at,pushedAt:meta.pushed_at,stars:meta.stargazers_count,forks:meta.forks_count,watchers:meta.subscribers_count,openIssues:meta.open_issues_count,license:meta.license?.spdx_id||null,archived:meta.archived,topics:meta.topics||[],homepage:meta.homepage||null},
     inventory:{fileCount:files.length,directoryCount:directories.size,treeTruncated:Boolean(treeData.truncated),files,categoryCounts},
+<<<<<<< HEAD
     languages:{githubBytes:languages,detectedFileCounts:extCounts},
     architecture:{entryPoints,dependencyFiles,manifestFileCount:manifestPaths.length,manifestSampleTruncated:manifestPaths.length>100,keyFiles,securitySignals:{hasSecurityPolicy:files.some(x=>/^security\.md$/i.test(x.path)),hasDependabot:securityFiles.some(x=>/dependabot/i.test(x)),securityRelatedFiles:securityFiles},hasTests:(categoryCounts.Tests||0)>0,hasCI:(categoryCounts["CI workflows"]||0)>0,hasLicense:Boolean(meta.license),hasReadme:Boolean(readmePath)},
     readme:readme?{path:readmePath,excerpt:readme.slice(0,12000),truncated:readme.length>12000}:null,
     caveats:["This report inventories the repository's default branch at the generated time.","File and language inventories are static metadata; source code is not executed and tests are not run.",...(treeData.truncated?["GitHub marked its recursive tree response as truncated, so the file inventory may be incomplete."]:[]),...(manifestPaths.length>100?["Only the first 100 dependency manifests are parsed; the full path inventory remains available below."]:[])]
+=======
+    languages:{githubBytes:languages},
+    architecture:{securitySignals:{hasSecurityPolicy:files.some(x=>/^security\.md$/i.test(x.path)),hasDependabot:securityFiles.some(x=>/dependabot/i.test(x)),securityRelatedFiles:securityFiles},hasTests:(categoryCounts.Tests||0)>0,hasCI:(categoryCounts["CI workflows"]||0)>0,hasLicense:Boolean(meta.license),hasReadme:Boolean(readmePath)},
+    readme:readme?{path:readmePath,excerpt:readme.slice(0,12000),truncated:readme.length>12000}:null,
+    caveats:["Repository inventory and health checks use GitHub metadata; code and tests are not executed.",...(treeData.truncated?["GitHub marked its file tree as truncated; the inventory may be incomplete."]:[])]
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
   };
 }
 export async function issues(owner,repo,token) {
@@ -183,6 +203,19 @@ ${body}`);
   }
   const files=await sourceFiles(owner,repo,ref,token);
   const evidence=await analyzeCode(claims,files);
+<<<<<<< HEAD
+=======
+  let changedFiles=[];
+  let changedFilesWarning="";
+  if(type==="pr") {
+    try {
+      const changed=await gh(`/repos/${owner}/${repo}/pulls/${n}/files?per_page=100`,token);
+      changedFiles=changed.map(f=>({path:f.filename,status:f.status,additions:f.additions,deletions:f.deletions,changes:f.changes,patch:String(f.patch||"").slice(0,4000)}));
+    } catch(error) {
+      changedFilesWarning=`Changed file list unavailable: ${error.message}`;
+    }
+  }
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
   let assessment={verdict:"Uncertain",summary:"Local AI assessment unavailable; inspect candidate evidence manually.",claims:claims.map(c=>({id:c.id,verdict:"Uncertain",reason:"No validated assessment returned.",missingEvidence:["Reproduction or test evidence"]})),limitations:["No repository code or tests were executed."]};
   let assessmentStatus="AI assessment unavailable";
   try {
@@ -195,7 +228,11 @@ No tests were run.`));
   } catch (error) {
     assessment.limitations=[...(assessment.limitations||[]),`AI assessment unavailable: ${error.message}`];
   }
+<<<<<<< HEAD
   const result={id:randomUUID(),owner,repo,type,number:n,title:item.title,url:item.html_url,analyzedRef:ref,claims,evidence:evidence.evidence||[],filesScanned:evidence.filesScanned,assessment,aiStatus:assessmentStatus,createdAt:new Date().toISOString(),note:["Static evidence search only. This MVP did not execute repository code or tests.",extractionWarning].filter(Boolean).join(" ")};
+=======
+  const result={id:randomUUID(),owner,repo,type,number:n,title:item.title,url:item.html_url,analyzedRef:ref,claims,evidence:evidence.evidence||[],filesScanned:evidence.filesScanned,changedFiles,changedFilesWarning,assessment,aiStatus:assessmentStatus,createdAt:new Date().toISOString(),note:["Static evidence search only. This MVP did not execute repository code or tests.",extractionWarning].filter(Boolean).join(" ")};
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
   store.set(result.id,result);
   return result;
 }

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 # IssueLens AI
+=======
+
+# Claim Verifier Bot
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
 **Don't Trust Claims. Verify Them With Code.**
 
 A runnable hackathon MVP: connect a public GitHub repository, fetch open issues, extract technical claims using a local Ollama model, search JS/Python files for candidate evidence, and show a cautious triage report.
@@ -70,4 +75,8 @@ A GitHub token is optional for public repos but required once the anonymous IP r
 3. Python + JS analyzer/evidence
 4. React UI and integration
 
+<<<<<<< HEAD
 Before hackathon submission, complete `HACKATHON.md`, verify organizer-required first-commit rules, add actual tested examples, and ensure CI passes.
+=======
+
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f

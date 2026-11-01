@@ -1,6 +1,18 @@
 node_modules/
 .venv/
+<<<<<<< HEAD
 __pycache__/
 .env
 dist/
 .DS_Store
+=======
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+dist/
+.DS_Store
+.vscode/
+IssueLens-AI.zip
+>>>>>>> 490d8ccd215d7cdce28052666cc209fdd8f0c39f
